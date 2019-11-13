@@ -1,1 +1,4 @@
 *.blend1
+node_modules
+export/*.gltf
+export/*.bin
