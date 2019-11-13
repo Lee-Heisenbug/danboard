@@ -2,3 +2,4 @@
 node_modules
 export/*.gltf
 export/*.bin
+dist
