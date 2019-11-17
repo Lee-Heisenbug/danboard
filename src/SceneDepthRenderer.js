@@ -1,13 +1,11 @@
-import { WebGLRenderer, Scene, Camera, Texture } from 'three';
 import SceneDepthMaterial from './SceneDepthMaterial';
+import SceneRenderer from './SceneRenderer';
 
-class SceneDepthRenderer {
+class SceneDepthRenderer extends SceneRenderer {
 
     constructor() {
 
-        this.renderer = new WebGLRenderer();
-        this._decoDOM();
-        this.sceneDepthMaterial = new SceneDepthMaterial();
+        super();
 
     }
     _decoDOM() {
@@ -15,38 +13,9 @@ class SceneDepthRenderer {
         this.renderer.domElement.classList.add( 'scene-depth' );
 
     }
-    getDOM() {
+    _getSceneMaterial() {
 
-        return this.renderer.domElement;
-
-    }
-    /**
-     * @param { Scene } scene 
-     * @param { Camera } camera 
-     */
-    render( scene, camera ) {
-
-        scene.overrideMaterial = this.sceneDepthMaterial;
-
-        this.renderer.render( scene, camera );
-
-        scene.overrideMaterial = null;
-
-    }
-    /**
-     * @returns { Texture }
-     */
-    getRenderResult() {
-
-
-
-    }
-    /**
-     * @param { Vector2 } s 
-     */
-    setSize( s ) {
-
-        this.renderer.setSize( s.x, s.y );
+        return new SceneDepthMaterial();
 
     }
 

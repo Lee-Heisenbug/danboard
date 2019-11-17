@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import SceneModifier from './SceneModifier';
 import sceneFile from '../export/danboard_low_poly.glb';
 import SceneDepthRenderer from './SceneDepthRenderer';
+import SceneNormalRenderer from './SceneNormalRenderer';
 
 class App {
 
@@ -14,6 +15,7 @@ class App {
 
         this.dom = dom;
         this.sceneDepthRenderer = new SceneDepthRenderer();
+        this.sceneNormalRenderer = new SceneNormalRenderer();
         this.renderer = new WebGLRenderer();
         this.renderer.gammaOutput = true;
         this.renderer.physicallyCorrectLights = true;
@@ -28,6 +30,7 @@ class App {
         /**@type { Scene } */
         this.scene;
         this.dom.append( this.sceneDepthRenderer.getDOM() );
+        this.dom.append( this.sceneNormalRenderer.getDOM() );
         this.dom.append( this.renderer.domElement );
 
     }
@@ -74,7 +77,7 @@ class App {
     }
     _resize() {
 
-        let ratio = new Vector2( 1.0, 0.5 );
+        let ratio = new Vector2( 0.5, 0.5 );
         let size = this._getWindowSize();
         size.multiply( ratio );
 
@@ -82,6 +85,7 @@ class App {
         this.camera.aspect = size.x / size.y;
         this.camera.updateProjectionMatrix();
         this.sceneDepthRenderer.setSize( size );
+        this.sceneNormalRenderer.setSize( size );
 
     }
     _getWindowSize() {
@@ -104,6 +108,7 @@ class App {
     _render() {
 
         this.sceneDepthRenderer.render( this.scene, this.camera );
+        this.sceneNormalRenderer.render( this.scene, this.camera );
         this.renderer.render( this.scene, this.camera );
 
     }
