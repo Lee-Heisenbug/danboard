@@ -1,38 +1,84 @@
-import { WebGLRenderer, Scene, PerspectiveCamera, Vector2 } from 'three';
+import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, WebGLRenderTarget, Vector4 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import SceneModifier from './SceneModifier';
 import sceneFile from '../export/danboard_low_poly.glb';
 import SceneDepthRenderer from './SceneDepthRenderer';
 import SceneNormalRenderer from './SceneNormalRenderer';
+import SceneRegularRenderer from './SceneRegularRenderer';
+import NormalRenderer from './NormalRenderer';
 
 class App {
 
     /**
-     * @param { HTMLElement } dom 
+     * @param { HTMLCanvasElement } dom 
      */
     constructor( dom ) {
 
         this.dom = dom;
-        this.sceneDepthRenderer = new SceneDepthRenderer();
-        this.sceneNormalRenderer = new SceneNormalRenderer();
-        this.renderer = new WebGLRenderer();
-        this.renderer.gammaOutput = true;
-        this.renderer.physicallyCorrectLights = true;
-        this.renderer.shadowMapEnabled = true;
-        this.renderer.setPixelRatio( window.devicePixelRatio );
-        this.camera = new PerspectiveCamera();
-        this.camera.far = 50;
-        this.camera.updateProjectionMatrix();
-        this.camera.position.set( 10, 10, 10 );
+        this.renderer = this._createRenderer();
+        this.scene;
+        this.camera = this._createCamera();
+        this.viewportRatio = new Vector2( 0.5, 0.5 );
+        /**@type { Scene } */
         this.contorl = new OrbitControls( this.camera, dom );
         this.contorl.screenSpacePanning = true;
-        /**@type { Scene } */
-        this.scene;
-        this.dom.append( this.sceneDepthRenderer.getDOM() );
-        this.dom.append( this.sceneNormalRenderer.getDOM() );
-        this.dom.append( this.renderer.domElement );
 
+        this.sceneDepthRenderer = new SceneDepthRenderer();
+        this.sceneDepthRenderer.setCamera( this.camera );
+        this.sceneDepthRenderer.setRenderer( this.renderer );
+        this.sceneNormalRenderer = new SceneNormalRenderer();
+        this.sceneNormalRenderer.setCamera( this.camera );
+        this.sceneNormalRenderer.setRenderer( this.renderer );
+        this.sceneRegularRenderer = new SceneRegularRenderer();
+        this.sceneRegularRenderer.setCamera( this.camera );
+        this.sceneRegularRenderer.setRenderer( this.renderer );
+
+        this.renderTarget = this._createRenderTarget();
+
+        this.normalRenderer = new NormalRenderer();
+        this.normalRenderer.setRenderer( this.renderer );
+        this.normalRenderer.setTexture( this.renderTarget.texture );
+
+        this.renderables = [
+
+            this.sceneRegularRenderer,
+            this.sceneDepthRenderer,
+            this.sceneNormalRenderer,
+            this.normalRenderer
+
+        ]
+
+    }
+    _createRenderer() {
+
+        let r = new WebGLRenderer( { canvas: this.dom } );
+        r.gammaOutput = true;
+        r.physicallyCorrectLights = true;
+        r.shadowMapEnabled = true;
+        r.setPixelRatio( window.devicePixelRatio );
+        r.autoClear = false;
+
+        return r;
+
+    }
+    _createCamera() {
+
+        let cam = new PerspectiveCamera();
+        cam.far = 50;
+        cam.updateProjectionMatrix();
+        cam.position.set( 10, 10, 10 );
+
+        return cam;
+
+    }
+    _createRenderTarget() {
+
+        let vpSize = this._getViewportSize();
+        let rt = new WebGLRenderTarget( vpSize.x, vpSize.y, { depthBuffer: true, stencilBuffer: false } );
+
+        return rt;
+        
     }
     main() {
         
@@ -41,6 +87,11 @@ class App {
 
             let sceneModifier = new SceneModifier( scene );
             self.scene = sceneModifier.getScene();
+
+            self.sceneDepthRenderer.setScene( self.scene );
+            self.sceneNormalRenderer.setScene( self.scene );
+            self.sceneRegularRenderer.setScene( self.scene );
+
             self._autoResize();
             self._autoRender();
 
@@ -77,15 +128,11 @@ class App {
     }
     _resize() {
 
-        let ratio = new Vector2( 0.5, 0.5 );
         let size = this._getWindowSize();
-        size.multiply( ratio );
 
         this.renderer.setSize( size.x, size.y );
         this.camera.aspect = size.x / size.y;
         this.camera.updateProjectionMatrix();
-        this.sceneDepthRenderer.setSize( size );
-        this.sceneNormalRenderer.setSize( size );
 
     }
     _getWindowSize() {
@@ -107,9 +154,46 @@ class App {
     }
     _render() {
 
-        this.sceneDepthRenderer.render( this.scene, this.camera );
-        this.sceneNormalRenderer.render( this.scene, this.camera );
-        this.renderer.render( this.scene, this.camera );
+        let self = this;
+
+        this.renderer.setRenderTarget( this.renderTarget );
+        this.renderer.clear( true, true, true );
+        this.sceneRegularRenderer.render();
+        this.renderer.setRenderTarget( null );
+
+        this.renderables.forEach( ( r, index ) => {
+
+            self._setViewport( index );
+            r.render();
+
+        } )
+
+    }
+    _setViewport( index ) {
+
+        let size = this._getViewportSize();
+        let position = this._getViewportPos( index );
+        this.renderer.setViewport( position.x, position.y, size.x, size.y );
+
+    }
+    _getViewportSize() {
+
+        let size = this._getWindowSize();
+        size.multiply( this.viewportRatio );
+        return size;
+
+    }
+    _getViewportPos( index ) {
+
+        let viewportSize = this._getViewportSize();
+        let pos = new Vector2();
+        let count = new Vector2( parseInt( 1 / this.viewportRatio.x ), parseInt( 1 / this.viewportRatio.y ) );
+        let indices = new Vector2( index % count.x, parseInt( index / count.x ) );
+
+        pos.setX( indices.x * viewportSize.x );
+        pos.setY( ( count.y - 1 - indices.y ) * viewportSize.y );
+
+        return pos;
 
     }
 

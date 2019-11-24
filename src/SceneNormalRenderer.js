@@ -8,11 +8,6 @@ class SceneNormalRenderer extends SceneRenderer {
         super();
 
     }
-    _decoDOM() {
-
-        this.renderer.domElement.classList.add( 'scene-normal' );
-
-    }
     _getSceneMaterial() {
 
         return new SceneNormalMaterial();

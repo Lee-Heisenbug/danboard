@@ -8,11 +8,6 @@ class SceneDepthRenderer extends SceneRenderer {
         super();
 
     }
-    _decoDOM() {
-
-        this.renderer.domElement.classList.add( 'scene-depth' );
-
-    }
     _getSceneMaterial() {
 
         return new SceneDepthMaterial();

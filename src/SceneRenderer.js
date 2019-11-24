@@ -1,55 +1,56 @@
 import { WebGLRenderer, Material, Scene, Camera } from 'three';
+import Renderable from './Renderable';
 
-class SceneRenderer {
+class SceneRenderer extends Renderable {
 
     constructor() {
 
-        this.renderer = new WebGLRenderer();
-        this._decoDOM();
+        super();
+        /**@type { WebGLRenderer } */
+        this.renderer;
         this.sceneMaterial = this._getSceneMaterial();
+        /**@type { Scene } */
+        this.scene;
+        /**@type { Camera } */
+        this.camera;
 
     }
-    /**
-     * @abstract
-     */
-    _decoDOM() {}
     /**
      * @abstract
      * @returns { Material }
      */
     _getSceneMaterial() {}
-    /**
-     * @param { Scene } scene 
-     * @param { Camera } camera 
-     */
-    render( scene, camera ) {
+    render() {
 
-        scene.overrideMaterial = this.sceneMaterial;
+        this.scene.overrideMaterial = this.sceneMaterial;
 
-        this.renderer.render( scene, camera );
+        this.renderer.render( this.scene, this.camera );
 
-        scene.overrideMaterial = null;
+        this.scene.overrideMaterial = null;
 
     }
     /**
-     * @returns { Texture }
+     * @param { WebGLRenderer } r 
      */
-    getRenderResult() {
+    setRenderer( r ) {
 
-
-
-    }
-    getDOM() {
-
-        return this.renderer.domElement;
+        this.renderer = r;
 
     }
     /**
-     * @param { Vector2 } s 
+     * @param { Scene } s
      */
-    setSize( s ) {
+    setScene( s ) {
 
-        this.renderer.setSize( s.x, s.y );
+        this.scene = s;
+
+    }
+    /**
+     * @param { Camera } c 
+     */
+    setCamera( c ) {
+
+        this.camera = c;
 
     }
 
