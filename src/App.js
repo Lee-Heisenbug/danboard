@@ -7,6 +7,7 @@ import SceneDepthRenderer from './SceneDepthRenderer';
 import SceneNormalRenderer from './SceneNormalRenderer';
 import SceneRegularRenderer from './SceneRegularRenderer';
 import NormalRenderer from './NormalRenderer';
+import KernelRotationMapGenerater from './KernelRotationMapGenerater';
 
 class App {
 
@@ -38,7 +39,8 @@ class App {
 
         this.normalRenderer = new NormalRenderer();
         this.normalRenderer.setRenderer( this.renderer );
-        this.normalRenderer.setTexture( this.renderTarget.texture );
+        this.kernalMapGenerater = new KernelRotationMapGenerater();
+        this.normalRenderer.setTexture( this.kernalMapGenerater.getMap() );
 
         this.renderables = [
 
