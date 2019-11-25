@@ -1,5 +1,5 @@
 import { WebGLRenderer, Material, Scene, Camera } from 'three';
-import Renderable from './Renderable';
+import Renderable from '../Renderable';
 
 class SceneRenderer extends Renderable {
 

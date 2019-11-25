@@ -3,9 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import SceneModifier from './SceneModifier';
 import sceneFile from '../export/danboard_low_poly.glb';
-import SceneDepthRenderer from './SceneDepthRenderer';
-import SceneNormalRenderer from './SceneNormalRenderer';
-import SceneRegularRenderer from './SceneRegularRenderer';
+import { SceneDepthRenderer, SceneNormalRenderer, SceneRegularRenderer } from './SceneRenderers';
 import NormalRenderer from './NormalRenderer';
 import KernelRotationMapGenerater from './KernelRotationMapGenerater';
 
