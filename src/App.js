@@ -1,4 +1,4 @@
-import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, WebGLRenderTarget, Vector4, FloatType } from 'three';
+import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, WebGLRenderTarget, HalfFloatType } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import SceneModifier from './SceneModifier';
@@ -85,7 +85,7 @@ class App {
     _createRenderTarget() {
 
         let vpSize = this._getViewportSize();
-        let rt = new WebGLRenderTarget( vpSize.x, vpSize.y, { depthBuffer: true, stencilBuffer: false, type: FloatType } );
+        let rt = new WebGLRenderTarget( vpSize.x, vpSize.y, { depthBuffer: true, stencilBuffer: false, type: HalfFloatType } );
 
         return rt;
         
