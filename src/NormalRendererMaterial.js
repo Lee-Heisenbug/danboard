@@ -1,4 +1,4 @@
-import { ShaderMaterial, Uniform, Texture } from 'three';
+import { ShaderMaterial, Uniform } from 'three';
 
 const V_SHADER = `
     varying vec2 v_uv;

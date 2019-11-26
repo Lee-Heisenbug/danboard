@@ -1,4 +1,4 @@
-import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, WebGLRenderTarget, Vector4 } from 'three';
+import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, WebGLRenderTarget, Vector4, FloatType } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import SceneModifier from './SceneModifier';
@@ -6,6 +6,8 @@ import sceneFile from '../export/danboard_low_poly.glb';
 import { SceneDepthRenderer, SceneNormalRenderer, SceneRegularRenderer } from './SceneRenderers';
 import NormalRenderer from './NormalRenderer';
 import KernelRotationMapGenerater from './KernelRotationMapGenerater';
+import SSAORenderer from './SSAORenderer';
+import Renderable from './Renderable';
 
 class App {
 
@@ -18,7 +20,7 @@ class App {
         this.renderer = this._createRenderer();
         this.scene;
         this.camera = this._createCamera();
-        this.viewportRatio = new Vector2( 0.5, 0.5 );
+        this.viewportRatio = new Vector2( 1 / 3, 1 / 3 );
         /**@type { Scene } */
         this.contorl = new OrbitControls( this.camera, dom );
         this.contorl.screenSpacePanning = true;
@@ -33,19 +35,27 @@ class App {
         this.sceneRegularRenderer.setCamera( this.camera );
         this.sceneRegularRenderer.setRenderer( this.renderer );
 
-        this.renderTarget = this._createRenderTarget();
+        this.scenePositionRenderTarget = this._createRenderTarget();
+        this.sceneNormalRenderTarget = this._createRenderTarget();
 
         this.normalRenderer = new NormalRenderer();
         this.normalRenderer.setRenderer( this.renderer );
         this.kernalMapGenerater = new KernelRotationMapGenerater();
         this.normalRenderer.setTexture( this.kernalMapGenerater.getMap() );
+        this.ssaoRenderer = new SSAORenderer();
+        this.ssaoRenderer.setRenderer( this.renderer );
+        this.ssaoRenderer.setNoiseMap( this.kernalMapGenerater.getMap() );
+        this.ssaoRenderer.setScenePositionMap( this.scenePositionRenderTarget.texture );
+        this.ssaoRenderer.setSceneNormalMap( this.sceneNormalRenderTarget.texture );
+        this.ssaoRenderer.setProjectionMatrix( this.camera.projectionMatrix );
 
         this.renderables = [
 
             this.sceneRegularRenderer,
             this.sceneDepthRenderer,
             this.sceneNormalRenderer,
-            this.normalRenderer
+            this.normalRenderer,
+            this.ssaoRenderer
 
         ]
 
@@ -75,7 +85,7 @@ class App {
     _createRenderTarget() {
 
         let vpSize = this._getViewportSize();
-        let rt = new WebGLRenderTarget( vpSize.x, vpSize.y, { depthBuffer: true, stencilBuffer: false } );
+        let rt = new WebGLRenderTarget( vpSize.x, vpSize.y, { depthBuffer: true, stencilBuffer: false, type: FloatType } );
 
         return rt;
         
@@ -133,6 +143,7 @@ class App {
         this.renderer.setSize( size.x, size.y );
         this.camera.aspect = size.x / size.y;
         this.camera.updateProjectionMatrix();
+        this.ssaoRenderer.setProjectionMatrix( this.camera.projectionMatrix );
 
     }
     _getWindowSize() {
@@ -156,10 +167,8 @@ class App {
 
         let self = this;
 
-        this.renderer.setRenderTarget( this.renderTarget );
-        this.renderer.clear( true, true, true );
-        this.sceneRegularRenderer.render();
-        this.renderer.setRenderTarget( null );
+        this._renderToRenderTarget( this.scenePositionRenderTarget, this.sceneDepthRenderer );
+        this._renderToRenderTarget( this.sceneNormalRenderTarget, this.sceneNormalRenderer );
 
         this.renderables.forEach( ( r, index ) => {
 
@@ -167,6 +176,18 @@ class App {
             r.render();
 
         } )
+
+    }
+    /**
+     * @param { WebGLRenderTarget } rt
+     * @param { Renderable } renderable
+     */
+    _renderToRenderTarget( rt, renderable ) {
+
+        this.renderer.setRenderTarget( rt );
+        this.renderer.clear( true, true, true );
+        renderable.render();
+        this.renderer.setRenderTarget( null );
 
     }
     _setViewport( index ) {

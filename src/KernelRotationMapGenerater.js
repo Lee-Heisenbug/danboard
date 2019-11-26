@@ -1,4 +1,4 @@
-import { DataTexture, Vector3, RGBFormat, UVMapping, RepeatWrapping } from 'three';
+import { DataTexture, Vector3, RGBFormat, UVMapping, RepeatWrapping, NearestFilter } from 'three';
 
 class KernelRotationMapGenerater {
 
@@ -30,7 +30,9 @@ class KernelRotationMapGenerater {
             undefined,
             UVMapping,
             RepeatWrapping,
-            RepeatWrapping
+            RepeatWrapping,
+            NearestFilter,
+            NearestFilter
         );
 
     }
