@@ -44,9 +44,10 @@ const F_SHADER = `
             offset.xyz  = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
 
             float sampleDepth = texture2D( positionMap, offset.xy ).z;
-            occlusion += ( sampleDepth >= sample.z + 0.05 ? 1.0 : 0.0);
+            float rangeCheck = smoothstep( 0.0, 1.0, radius / abs( sampleDepth - fragPos.z ) );
+            occlusion += ( sampleDepth >= sample.z ? 1.0 : 0.0 ) * rangeCheck;
 
-        }  
+        }
 
         gl_FragColor = vec4( 1.0 - vec3( occlusion / float( KERNEL_SIZE ) ), 1.0 );
 
