@@ -5,8 +5,6 @@ import sceneFile from '../export/danboard_low_poly.glb';
 import SceneModifier from './SceneModifier';
 import SSAOGenerator from './SSAOGenerator';
 
-import NormalRenderer from './NormalRenderer';
-
 class App {
 
     /**
@@ -22,10 +20,6 @@ class App {
         this.SSAOGenerator = new SSAOGenerator();
         this.SSAOGenerator.setCamera( this.camera );
         this.SSAOGenerator.setRenderer( this.renderer );
-
-        this.normalRenderer = new NormalRenderer();
-        this.normalRenderer.setRenderer( this.renderer );
-        this.normalRenderer.setTexture( this.SSAOGenerator.getRenderResult() );
 
         new OrbitControls( this.camera, dom );
         this._autoResize();
@@ -59,7 +53,7 @@ class App {
         this._loadScene().then( scene => {
 
             self._setScene( scene );
-            self._changeObjectsMaterial();
+            self._modifyScene();
             self._autoRender();
 
         } )
@@ -89,9 +83,10 @@ class App {
         this.SSAOGenerator.setScene( this.scene );
 
     }
-    _changeObjectsMaterial() {
+    _modifyScene() {
 
         let sceneModifier = new SceneModifier( this.scene );
+        sceneModifier.setSSAO( this.SSAOGenerator.getRenderResult() );
         this.scene = sceneModifier.getScene();
 
     }
@@ -148,8 +143,7 @@ class App {
     }
     _renderScene() {
 
-        // this.renderer.render( this.scene, this.camera );
-        this.normalRenderer.render();
+        this.renderer.render( this.scene, this.camera );
 
     }
 

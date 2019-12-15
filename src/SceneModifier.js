@@ -1,4 +1,5 @@
-import { Scene, AmbientLight } from 'three';
+import { Scene, AmbientLight, Texture, Mesh, UniformsUtils } from 'three';
+import StandardSSAOMaterial from './StandardSSAOMaterial';
 
 class SceneModifier {
 
@@ -8,6 +9,7 @@ class SceneModifier {
     constructor( scene ) {
 
         this.scene = scene;
+        this.ssaoTexture;
 
     }
     getScene() {
@@ -16,7 +18,18 @@ class SceneModifier {
         return this.scene;
 
     }
+    /**
+     * 
+     * @param { Texture } t 
+     */
+    setSSAO( t ) {
+
+        this.ssaoTexture = t;
+
+    }
     _modifyScene() {
+
+        let self = this;
 
         this.scene.add( ...this._createLights() );
 
@@ -24,6 +37,7 @@ class SceneModifier {
 
             if( obj.isMesh ) {
 
+                self._setupMaterial( obj );
                 obj.castShadow = true;
                 obj.receiveShadow = true;
 
@@ -39,6 +53,17 @@ class SceneModifier {
     _createLights() {
 
         return [ new AmbientLight( '#ffffff', 1.5 ) ];
+
+    }
+    /**
+     * @param { Mesh } obj 
+     */
+    _setupMaterial( obj ) {
+
+        let originMaterial = obj.material;
+        obj.material = new StandardSSAOMaterial( obj.material.uniforms );
+        obj.material.uniforms.ssaoMap.value = this.ssaoTexture;
+        obj.material.uniforms.diffuse.value = originMaterial.color;
 
     }
 
