@@ -1,4 +1,4 @@
-import { WebGLRenderer, Scene, PerspectiveCamera, Vector2 } from 'three';
+import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, Clock, AnimationMixer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import sceneFile from '../export/danboard_low_poly.glb';
@@ -20,6 +20,10 @@ class App {
         this.SSAOGenerator = new SSAOGenerator();
         this.SSAOGenerator.setCamera( this.camera );
         this.SSAOGenerator.setRenderer( this.renderer );
+
+        this._loadedModel;
+        this.animation;
+        this.clock = new Clock();
 
         new OrbitControls( this.camera, dom );
         this._autoResize();
@@ -50,29 +54,67 @@ class App {
     main() {
 
         let self = this;
-        this._loadScene().then( scene => {
+        Promise.all( [
 
-            self._setScene( scene );
-            self._modifyScene();
+            self._prepareScene(),
+            self._prepareAnimation()
+
+        ] ).then( () => {
+
+            self._playAnimation();
             self._autoRender();
+
+        } );
+
+    }
+    _prepareScene() {
+
+        let self = this;
+
+        return this._loadGLTFModel().then( gltf => {
+
+            self._setScene( gltf.scene );
+            self._modifyScene();
+
+        } );
+
+    }
+    _prepareAnimation() {
+
+        let self = this;
+
+        return this._loadGLTFModel().then( gltf => {
+
+            self._setAnimation( gltf.animations[ 0 ] );
 
         } )
 
     }
-    _loadScene() {
+    _loadGLTFModel() {
 
-        let loader = new GLTFLoader();
+        if( !this._loadedModel ) {
 
-        return new Promise( ( res ) => {
+            this._loadedModel = new Promise( ( res, rej ) => {
 
-            loader.load( sceneFile, ( gltf ) => {
+                let loader = new GLTFLoader();
 
-                res( gltf.scene );
+                loader.load( sceneFile, ( gltf ) => {
+
+                    res( gltf );
+    
+                } )
 
             } )
 
-        } )
+        }
+
+        return this._loadedModel;
         
+    }
+    _setAnimation( a ) {
+
+        this.animation = a;
+
     }
     /**
      * @param { Scene } s 
@@ -81,6 +123,24 @@ class App {
 
         this.scene = s;
         this.SSAOGenerator.setScene( this.scene );
+
+    }
+    _playAnimation() {
+
+        let self = this;
+        let mixer = new AnimationMixer( this.scene );
+        let action = mixer.clipAction( this.animation );
+        action.play();
+
+        function autoUpdateMixer() {
+
+            mixer.update( self.clock.getDelta() );
+
+            requestAnimationFrame( autoUpdateMixer );
+
+        }
+
+        autoUpdateMixer();
 
     }
     _modifyScene() {
