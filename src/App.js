@@ -4,6 +4,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import sceneFile from '../export/danboard_low_poly.glb';
 import SceneModifier from './SceneModifier';
 import SSAOGenerator from './SSAOGenerator';
+import DanboardApp from './DanboardApp';
+import MovementControl from './MovementControl';
 
 class App {
 
@@ -16,6 +18,8 @@ class App {
         this.renderer = this._createRenderer();
         /**@type { Scene } */
         this.scene;
+        this.danboard;
+        this.movementControl = new MovementControl();
         this.camera = this._createCamera();
         this.SSAOGenerator = new SSAOGenerator();
         this.SSAOGenerator.setCamera( this.camera );
@@ -56,6 +60,7 @@ class App {
         let self = this;
         Promise.all( [
 
+            self._prepareDanboard(),
             self._prepareScene(),
             self._prepareAnimation()
 
@@ -65,6 +70,18 @@ class App {
             self._autoRender();
 
         } );
+
+    }
+    _prepareDanboard() {
+
+        let self = this;
+
+        return this._loadGLTFModel().then( gltf => {
+
+            self.danboard = gltf.scene.getObjectByName( "Armature" );
+            self.movementControl.setObject( self.danboard );
+
+        } )
 
     }
     _prepareScene() {
@@ -85,7 +102,7 @@ class App {
 
         return this._loadGLTFModel().then( gltf => {
 
-            self._setAnimation( gltf.animations[ 0 ] );
+            self._setAnimation( gltf.animations[ 2 ] );
 
         } )
 
@@ -208,5 +225,20 @@ class App {
     }
 
 }
+
+Object.assign( App.prototype, DanboardApp.prototype, {
+
+    move( factor ) {
+
+        this.movementControl.move( factor );
+
+    },
+    turn( factor ) {
+
+        this.movementControl.turn( factor );
+
+    }
+    
+} );
 
 export default App;
