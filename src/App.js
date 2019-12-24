@@ -6,6 +6,7 @@ import SceneModifier from './SceneModifier';
 import SSAOGenerator from './SSAOGenerator';
 import DanboardApp from './DanboardApp';
 import MovementControl from './MovementControl';
+import DOMPointerOffsetEmitter from './DOMPointerOffsetEmitter';
 
 class App {
 
@@ -24,13 +25,28 @@ class App {
         this.SSAOGenerator = new SSAOGenerator();
         this.SSAOGenerator.setCamera( this.camera );
         this.SSAOGenerator.setRenderer( this.renderer );
-
+        this.velocity = new Vector2();
+        this.domPointerOffsetEmitter = new DOMPointerOffsetEmitter( this.dom );
         this._loadedModel;
         this.animation;
         this.clock = new Clock();
 
-        new OrbitControls( this.camera, dom );
+        let cameraContorls = new OrbitControls( this.camera, dom );
+        cameraContorls.enableRotate = false;
         this._autoResize();
+        this._handleEvents();
+
+    }
+    _handleEvents() {
+
+        let self = this;
+
+        this.domPointerOffsetEmitter.addEventListener( offset => {
+
+            let velocity = [ offset[ 0 ] / 100, -offset[ 1 ] / 100 ];
+            this.movementControl.move( velocity );
+
+        } );
 
     }
     _createRenderer() {
