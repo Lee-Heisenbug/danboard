@@ -1,5 +1,4 @@
 import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, Clock, AnimationMixer, Vector3 } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import sceneFile from '../export/danboard_low_poly.glb';
 import SceneModifier from './SceneModifier';
@@ -42,12 +41,26 @@ class App {
 
         this.domPointerOffsetEmitter.addEventListener( offset => {
 
-            let velocity = [ offset[ 0 ] / 100, -offset[ 1 ] / 100 ];
-            this.movementControl.move( velocity );
-            this.camera.position.x += velocity[ 0 ];
-            this.camera.position.z -= velocity[ 1 ];
+            let velocityFactor = this._getVelocityFactor( offset );
+            this.movementControl.move( velocityFactor );
+            this.camera.position.x += velocityFactor[ 0 ];
+            this.camera.position.z -= velocityFactor[ 1 ];
 
         } );
+
+    }
+    /**@param { Array< number, number > } offset */
+    _getVelocityFactor( offset ) {
+
+        const RANGE = 200;
+        let v = new Vector2( offset[ 0 ], -offset[ 1 ] );
+        v.clampLength( 0, RANGE );
+
+        v.divideScalar( RANGE );
+
+        console.log( v.x, v.y );
+
+        return [ v.x, v.y ];
 
     }
     _createRenderer() {
