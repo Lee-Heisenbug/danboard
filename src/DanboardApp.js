@@ -2,8 +2,8 @@ function DanboardMoveApp() {}
 
 Object.assign( DanboardMoveApp.prototype, {
 
-    move( factor ) {},
-    turn( factor ) {}
+    /**@type { Array< number, number > } */
+    move( moveVector ) {},
 
 } );
 

@@ -1,4 +1,4 @@
-import { Object3D } from "three";
+import { Object3D, Vector2 } from "three";
 
 class MovementControl {
 
@@ -16,15 +16,17 @@ class MovementControl {
         this.object = obj;
 
     }
-    move( factor ) {
+    /**@type { Array< number, number > } */
+    move( moveVector ) {
 
-        this.object.translateZ( factor );
-
-    }
-    turn( factor ) {
-
+        let velocity = new Vector2( moveVector[ 0 ], moveVector[ 1 ] );
+        
         this.object.rotation.reorder( 'YXZ' );
-        this.object.rotation.y = factor;
+
+        this.object.rotation.y = Math.atan2( velocity.y, velocity.x ) - Math.PI / 2;
+
+        this.object.translateZ( velocity.length() );
+
 
     }
 

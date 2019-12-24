@@ -50,7 +50,7 @@ class App {
         let cam = new PerspectiveCamera();
         cam.far = 50;
         cam.updateProjectionMatrix();
-        cam.position.set( 10, 10, 10 );
+        cam.position.set( 0, 10, -10 );
 
         return cam;
 
@@ -228,14 +228,10 @@ class App {
 
 Object.assign( App.prototype, DanboardApp.prototype, {
 
-    move( factor ) {
+    /** @param { Array< number, number > } moveVector */
+    move( moveVector ) {
 
-        this.movementControl.move( factor );
-
-    },
-    turn( factor ) {
-
-        this.movementControl.turn( factor );
+        this.movementControl.move( moveVector );
 
     }
     
