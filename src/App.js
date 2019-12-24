@@ -44,6 +44,8 @@ class App {
 
             let velocity = [ offset[ 0 ] / 100, -offset[ 1 ] / 100 ];
             this.movementControl.move( velocity );
+            this.camera.position.x += velocity[ 0 ];
+            this.camera.position.z -= velocity[ 1 ];
 
         } );
 
