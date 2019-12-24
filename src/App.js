@@ -1,4 +1,4 @@
-import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, Clock, AnimationMixer } from 'three';
+import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, Clock, AnimationMixer, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import sceneFile from '../export/danboard_low_poly.glb';
@@ -31,8 +31,7 @@ class App {
         this.animation;
         this.clock = new Clock();
 
-        let cameraContorls = new OrbitControls( this.camera, dom );
-        cameraContorls.enableRotate = false;
+        this.camera.lookAt( new Vector3( 0, 3, 0 ) );
         this._autoResize();
         this._handleEvents();
 
@@ -66,7 +65,7 @@ class App {
         let cam = new PerspectiveCamera();
         cam.far = 50;
         cam.updateProjectionMatrix();
-        cam.position.set( 0, 10, -10 );
+        cam.position.set( 0, 8, 10 );
 
         return cam;
 

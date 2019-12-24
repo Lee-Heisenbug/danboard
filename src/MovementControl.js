@@ -23,10 +23,9 @@ class MovementControl {
         
         this.object.rotation.reorder( 'YXZ' );
 
-        this.object.rotation.y = Math.atan2( velocity.y, velocity.x ) - Math.PI / 2;
+        this.object.rotation.y = Math.atan2( velocity.y, velocity.x ) + Math.PI / 2;
 
         this.object.translateZ( velocity.length() );
-
 
     }
 
