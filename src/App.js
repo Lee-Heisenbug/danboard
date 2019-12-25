@@ -6,6 +6,7 @@ import SSAOGenerator from './SSAOGenerator';
 import DanboardApp from './DanboardApp';
 import MovementControl from './MovementControl';
 import DOMPointerOffsetEmitter from './DOMPointerOffsetEmitter';
+import MovementAnimationControl from './MovementAnimationControl';
 
 class App {
 
@@ -23,6 +24,17 @@ class App {
         this.camera = this._createCamera();
         this.cameraControl = new MovementControl();
         this.cameraControl.enableRotation( false );
+
+        this.animationMixer = new AnimationMixer();
+        this.idleClip;
+        this.idleAction;
+        this.walkClip;
+        this.walkAction;
+        this.runClip;
+        this.runAction;
+        /**@type { MovementAnimationControl } */
+        this.movementAnimationControl = new MovementAnimationControl();
+
         this.SSAOGenerator = new SSAOGenerator();
         this.SSAOGenerator.setCamera( this.camera );
         this.SSAOGenerator.setRenderer( this.renderer );
@@ -32,7 +44,7 @@ class App {
         this.animation;
         this.clock = new Clock();
 
-        this.camera.lookAt( new Vector3( 0, 3, 0 ) );
+        this.camera.lookAt( new Vector3( 0, 3.5, 0 ) );
         this._autoResize();
         this._handleEvents();
 
@@ -46,6 +58,7 @@ class App {
             let velocityFactor = self._getVelocityFactor( offset );
             self.movementControl.move( velocityFactor );
             self.cameraControl.move( velocityFactor );
+            self.movementAnimationControl.setMoveFactor( new Vector2( velocityFactor[ 0 ], velocityFactor[ 1 ] ).length() );
 
         } );
 
@@ -58,8 +71,6 @@ class App {
         v.clampLength( 0, RANGE );
 
         v.divideScalar( RANGE );
-
-        console.log( v.x, v.y );
 
         return [ v.x, v.y ];
 
@@ -81,7 +92,7 @@ class App {
         let cam = new PerspectiveCamera();
         cam.far = 50;
         cam.updateProjectionMatrix();
-        cam.position.set( 0, 8, 10 );
+        cam.position.set( 0, 12, 15 );
 
         return cam;
 
@@ -138,7 +149,9 @@ class App {
 
         return this._loadGLTFModel().then( gltf => {
 
-            self._setAnimation( gltf.animations[ 2 ] );
+            self.idleClip = gltf.animations[ 2 ];
+            self.walkClip = gltf.animations[ 1 ];
+            self.runClip = gltf.animations[ 0 ];
 
         } )
 
@@ -181,14 +194,26 @@ class App {
     _playAnimation() {
 
         let self = this;
-        let mixer = new AnimationMixer( this.scene );
-        let action = mixer.clipAction( this.animation );
-        action.play();
+        this.animationMixer = new AnimationMixer( this.scene );
+        this.idleAction = this.animationMixer.clipAction( this.idleClip );
+        this.walkAction = this.animationMixer.clipAction( this.walkClip );
+        this.runAction = this.animationMixer.clipAction( this.runClip );
 
+        this.idleAction.play();
+        this.walkAction.play();
+        this.runAction.play();
+
+        this.movementAnimationControl.setIdleAnimation( this.idleAction );
+        this.movementAnimationControl.setWalkAnimation( this.walkAction );
+        this.movementAnimationControl.setRunAnimation( this.runAction );
+
+        this.movementAnimationControl.setMoveFactor( 0 );
+        this.movementAnimationControl.updateThreshold();
+
+        
         function autoUpdateMixer() {
-
-            mixer.update( self.clock.getDelta() );
-
+            
+            self.animationMixer.update( self.clock.getDelta() );
             requestAnimationFrame( autoUpdateMixer );
 
         }
