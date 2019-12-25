@@ -21,6 +21,8 @@ class App {
         this.danboard;
         this.movementControl = new MovementControl();
         this.camera = this._createCamera();
+        this.cameraControl = new MovementControl();
+        this.cameraControl.enableRotation( false );
         this.SSAOGenerator = new SSAOGenerator();
         this.SSAOGenerator.setCamera( this.camera );
         this.SSAOGenerator.setRenderer( this.renderer );
@@ -41,10 +43,9 @@ class App {
 
         this.domPointerOffsetEmitter.addEventListener( offset => {
 
-            let velocityFactor = this._getVelocityFactor( offset );
-            this.movementControl.move( velocityFactor );
-            this.camera.position.x += velocityFactor[ 0 ];
-            this.camera.position.z -= velocityFactor[ 1 ];
+            let velocityFactor = self._getVelocityFactor( offset );
+            self.movementControl.move( velocityFactor );
+            self.cameraControl.move( velocityFactor );
 
         } );
 
@@ -53,7 +54,7 @@ class App {
     _getVelocityFactor( offset ) {
 
         const RANGE = 200;
-        let v = new Vector2( offset[ 0 ], -offset[ 1 ] );
+        let v = new Vector2( offset[ 0 ], offset[ 1 ] );
         v.clampLength( 0, RANGE );
 
         v.divideScalar( RANGE );
@@ -110,6 +111,11 @@ class App {
 
             self.danboard = gltf.scene.getObjectByName( "Armature" );
             self.movementControl.setObject( self.danboard );
+            self.cameraControl.setObject( self.camera );
+            self.movementControl.enable();
+            self.cameraControl.enable();
+            self.movementControl.setMaxSpeed( 5 );
+            self.cameraControl.setMaxSpeed( 5 );
 
         } )
 

@@ -29,6 +29,8 @@ class DOMPointerOffsetEmitter {
         this.dom.addEventListener( 'touchstart', e => { self._onTouchStart( e ) } );
         this.dom.addEventListener( 'mousemove', e => { self._onMouseMove( e ) } );
         this.dom.addEventListener( 'touchmove', e => { self._onTouchmove( e ) } );
+        this.dom.addEventListener( 'mouseup', e => { self._onMouseUp( e ) } );
+        this.dom.addEventListener( 'touchend', e => { self._onTouchEnd( e ) } );
 
     }
     /** @param { MouseEvent } e */
@@ -88,6 +90,22 @@ class DOMPointerOffsetEmitter {
     _emitPointerOffset() {
 
         this.callBack( this.offsetPosition );
+
+    }
+    _onMouseUp() {
+
+        this._emitPointerOffsetWithZeroOffset();
+
+    }
+    _onTouchEnd() {
+
+        this._emitPointerOffsetWithZeroOffset();
+
+    }
+    _emitPointerOffsetWithZeroOffset() {
+
+        this.offsetPosition = [ 0, 0 ];
+        this._emitPointerOffset();
 
     }
     /** @param { PointerOffsetCallback } callBack */
