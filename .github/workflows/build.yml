@@ -15,7 +15,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Build and Deploy
-      use: JamesIves/github-pages-deploy-action@releases/v3
+      uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
           ACCESS_TOKEN: ${{ secrets.buildSecret }}
           BRANCH: deploy # The branch the action should deploy to.
