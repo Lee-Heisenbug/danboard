@@ -1,4 +1,4 @@
-import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, Clock, AnimationMixer, Vector3 } from 'three';
+import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, Clock, AnimationMixer, Vector3, Color } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import sceneFile from '../export/danboard_low_poly.glb';
 import SceneModifier from './SceneModifier';
@@ -188,6 +188,7 @@ class App {
     _setScene( s ) {
 
         this.scene = s;
+        this.scene.background = new Color( '#fff' );
         this.SSAOGenerator.setScene( this.scene );
 
     }
