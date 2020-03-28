@@ -1,6 +1,7 @@
 {
   "homepage": "https://lee-heisenbug.github.io/danboard/",
   "scripts": {
+    "test": "jest",
     "dev": "webpack-dev-server --open --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
   },
@@ -12,6 +13,7 @@
     "css-loader": "^3.2.0",
     "file-loader": "^4.2.0",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^25.2.2",
     "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.0",
