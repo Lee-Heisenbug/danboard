@@ -52,7 +52,7 @@ class SceneModifier {
     }
     _createLights() {
 
-        return [ new AmbientLight( '#ffffff', 7 ) ];
+        return [ new AmbientLight( '#ffffff', 5 ) ];
 
     }
     /**

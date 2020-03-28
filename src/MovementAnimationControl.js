@@ -62,7 +62,7 @@ class MovementAnimationControl {
         this.idleAnimation.timeScale = idleDur / duration;
         this.walkAnimation.timeScale = walkDur / duration;
         this.runAnimation.timeScale = runDur / duration;
-        console.log( this.idleAnimation.timeScale, this.walkAnimation.timeScale, this.runAnimation.timeScale );
+        // console.log( this.idleAnimation.timeScale, this.walkAnimation.timeScale, this.runAnimation.timeScale );
 
     }
     _updateAnimationWeight() {
