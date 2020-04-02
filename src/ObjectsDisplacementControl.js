@@ -39,7 +39,6 @@ class ObjectsDisplacementControl {
      */
     moveByTime( t ) {
 
-        let self = this;
         let offset = new Vector2();
         offset.copy( this.factor );
         offset.multiply( this.maxVelocity );

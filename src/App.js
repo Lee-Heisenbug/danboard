@@ -4,9 +4,10 @@ import sceneFile from '../export/danboard_low_poly.glb';
 import SceneModifier from './SceneModifier';
 import SSAOGenerator from './SSAOGenerator';
 import DanboardApp from './DanboardApp';
-import MovementControl from './MovementControl';
 import DOMPointerOffsetEmitter from './DOMPointerOffsetEmitter';
 import MovementAnimationControl from './MovementAnimationControl';
+import ObjectsDisplacementControl from './ObjectsDisplacementControl';
+import ObjectsDirectionControl from './ObjectsDirectionControl';
 
 class App {
 
@@ -20,10 +21,10 @@ class App {
         /**@type { Scene } */
         this.scene;
         this.danboard;
-        this.movementControl = new MovementControl();
+        this.movementControl = new ObjectsDisplacementControl();
+        this.movementControl.setMaxVelocity( new Vector2( 5, 5 ) );
+        this.objectsDirectionControl = new ObjectsDirectionControl();
         this.camera = this._createCamera();
-        this.cameraControl = new MovementControl();
-        this.cameraControl.enableRotation( false );
 
         this.animationMixer = new AnimationMixer();
         this.idleClip;
@@ -56,8 +57,14 @@ class App {
         this.domPointerOffsetEmitter.addEventListener( offset => {
 
             let velocityFactor = self._getVelocityFactor( offset );
-            self.movementControl.move( velocityFactor );
-            self.cameraControl.move( velocityFactor );
+
+            console.log( velocityFactor );
+            self.movementControl.setFactor( new Vector2( velocityFactor[ 0 ], velocityFactor[ 1 ] ) );
+            if( velocityFactor[ 0 ] !== 0 || velocityFactor[ 1 ] !== 0 ) {
+                
+                self.objectsDirectionControl.setDirection( new Vector2( velocityFactor[ 0 ], velocityFactor[ 1 ] ) );
+
+            }
             self.movementAnimationControl.setMoveFactor( new Vector2( velocityFactor[ 0 ], velocityFactor[ 1 ] ).length() );
 
         } );
@@ -72,7 +79,7 @@ class App {
 
         v.divideScalar( RANGE );
 
-        return [ v.x, v.y ];
+        return [ v.x, -v.y ];
 
     }
     _createRenderer() {
@@ -120,13 +127,11 @@ class App {
 
         return this._loadGLTFModel().then( gltf => {
 
+            let floor = gltf.scene.getObjectByName( "floor" );
             self.danboard = gltf.scene.getObjectByName( "Armature" );
-            self.movementControl.setObject( self.danboard );
-            self.cameraControl.setObject( self.camera );
-            self.movementControl.enable();
-            self.cameraControl.enable();
-            self.movementControl.setMaxSpeed( 5 );
-            self.cameraControl.setMaxSpeed( 5 );
+
+            self.movementControl.setObjects( [ self.danboard, self.camera, floor ] );
+            self.objectsDirectionControl.setObjects( [ self.danboard ] );
 
         } )
 
