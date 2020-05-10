@@ -8,6 +8,7 @@ import DOMPointerOffsetEmitter from './DOMPointerOffsetEmitter';
 import MovementAnimationControl from './MovementAnimationControl';
 import ObjectsDisplacementControl from './ObjectsDisplacementControl';
 import ObjectsDirectionControl from './ObjectsDirectionControl';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 class App {
 
@@ -48,6 +49,7 @@ class App {
         this.camera.lookAt( new Vector3( 0, 3.5, 0 ) );
         this._autoResize();
         this._handleEvents();
+        new OrbitControls( this.camera, dom );
 
     }
     _handleEvents() {
@@ -97,7 +99,7 @@ class App {
     _createCamera() {
 
         let cam = new PerspectiveCamera();
-        cam.far = 50;
+        cam.far = 5000;
         cam.updateProjectionMatrix();
         cam.position.set( 0, 12, 15 );
 

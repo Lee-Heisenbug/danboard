@@ -1,5 +1,6 @@
-import { Scene, AmbientLight, Texture, Mesh, UniformsUtils } from 'three';
+import { Scene, AmbientLight, Texture, Mesh, Color, SphereBufferGeometry } from 'three';
 import StandardSSAOMaterial from './StandardSSAOMaterial';
+import SkyDome from './SkyDome';
 
 class SceneModifier {
 
@@ -49,6 +50,8 @@ class SceneModifier {
             
         } )
 
+        this.scene.add( this._createSkyDome() );
+
     }
     _createLights() {
 
@@ -64,6 +67,12 @@ class SceneModifier {
         obj.material = new StandardSSAOMaterial( obj.material.uniforms );
         obj.material.uniforms.ssaoMap.value = this.ssaoTexture;
         obj.material.uniforms.diffuse.value = originMaterial.color;
+
+    }
+    
+    _createSkyDome() {
+
+        return new SkyDome( new Color( 0x3a96ff ), new Color( 0xffffff ) );
 
     }
 
