@@ -6,9 +6,8 @@ import SSAOGenerator from './SSAOGenerator';
 import DanboardApp from './DanboardApp';
 import DOMPointerOffsetEmitter from './DOMPointerOffsetEmitter';
 import MovementAnimationControl from './MovementAnimationControl';
-import ObjectsDisplacementControl from './ObjectsDisplacementControl';
-import ObjectsDirectionControl from './ObjectsDirectionControl';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import CameraRelativeObjectMovementControl from './CameraRelativeObjectMovementControl';
 
 class App {
 
@@ -22,9 +21,8 @@ class App {
         /**@type { Scene } */
         this.scene;
         this.danboard;
-        this.movementControl = new ObjectsDisplacementControl();
-        this.movementControl.setMaxVelocity( new Vector2( 5, 5 ) );
-        this.objectsDirectionControl = new ObjectsDirectionControl();
+        /**@type { CameraRelativeObjectMovementControl } */
+        this.movementControl;
         this.camera = this._createCamera();
 
         this.animationMixer = new AnimationMixer();
@@ -49,7 +47,7 @@ class App {
         this.camera.lookAt( new Vector3( 0, 3.5, 0 ) );
         this._autoResize();
         this._handleEvents();
-        new OrbitControls( this.camera, dom );
+        this.contorls = new OrbitControls( this.camera, dom );
 
     }
     _handleEvents() {
@@ -61,12 +59,7 @@ class App {
             let velocityFactor = self._getVelocityFactor( offset );
 
             console.log( velocityFactor );
-            self.movementControl.setFactor( new Vector2( velocityFactor[ 0 ], velocityFactor[ 1 ] ) );
-            if( velocityFactor[ 0 ] !== 0 || velocityFactor[ 1 ] !== 0 ) {
-                
-                self.objectsDirectionControl.setDirection( new Vector2( velocityFactor[ 0 ], velocityFactor[ 1 ] ) );
-
-            }
+            self.movementControl.move( velocityFactor[ 0 ], velocityFactor[ 1 ] )
             self.movementAnimationControl.setMoveFactor( new Vector2( velocityFactor[ 0 ], velocityFactor[ 1 ] ).length() );
 
         } );
@@ -129,11 +122,11 @@ class App {
 
         return this._loadGLTFModel().then( gltf => {
 
-            let floor = gltf.scene.getObjectByName( "floor" );
             self.danboard = gltf.scene.getObjectByName( "Armature" );
 
-            self.movementControl.setObjects( [ self.danboard, self.camera, floor ] );
-            self.objectsDirectionControl.setObjects( [ self.danboard ] );
+            self.contorls.target = self.danboard.position;
+            self.movementControl = new CameraRelativeObjectMovementControl( self.camera, self.danboard );
+            self.movementControl.setSpeed( 5 );
 
         } )
 
@@ -221,7 +214,10 @@ class App {
         
         function autoUpdateMixer() {
             
-            self.animationMixer.update( self.clock.getDelta() );
+            let delta = self.clock.getDelta();
+            self.animationMixer.update( delta );
+            self.movementControl.updateByTime( delta );
+            self.contorls.update();
             requestAnimationFrame( autoUpdateMixer );
 
         }
