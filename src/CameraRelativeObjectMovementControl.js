@@ -1,5 +1,6 @@
 import ObjectsDisplacementControl from './ObjectsDisplacementControl';
-import { Vector2, Camera, Object3D, Vector3, Matrix4 } from 'three';
+import ObjectsDirectionControl from './ObjectsDirectionControl';
+import { Vector2, Camera, Object3D, Vector3, Matrix4, Matrix3 } from 'three';
 
 export default class CameraRelativeObjectMovementControl {
 
@@ -12,6 +13,9 @@ export default class CameraRelativeObjectMovementControl {
         this.object = object;
         this.objectDisplacementControl = new ObjectsDisplacementControl();
         this.objectDisplacementControl.setObjects( [ object ] );
+        this.objectDirectionControl = new ObjectsDirectionControl();
+        this.objectDirectionControl.setObjects( [ object ] );
+        this.factor = new Vector2();
     }
     /**
      * @param { number } x 
@@ -20,6 +24,7 @@ export default class CameraRelativeObjectMovementControl {
     move( x, z ) {
 
         this.objectDisplacementControl.setFactor( new Vector2( x, z ));
+        this.factor.set( x, z )
 
     }
     /**
@@ -38,6 +43,9 @@ export default class CameraRelativeObjectMovementControl {
         let objectParentMatrixWorldInverse = new Matrix4();
         let cameraRelativePosition = new Vector3();
         let objectWorldPosition = new Vector3();
+        let cameraRelativeDirection = new Vector3( this.factor.x, 0, -this.factor.y );
+        let objectWorldDirection = new Vector3();
+        let objectDirection = new Vector3();
 
         cameraHorizontalDouble.rotation.reorder( 'YXZ' );
         cameraHorizontalDouble.rotation.x = 0;
@@ -58,8 +66,18 @@ export default class CameraRelativeObjectMovementControl {
         this.object.position.applyMatrix4( cameraHorizontalDouble.matrixWorld );
         objectWorldPosition.copy( this.object.position )
 
+        cameraRelativeDirection.applyMatrix3( new Matrix3().setFromMatrix4( cameraHorizontalDouble.matrixWorld ) );
+        objectWorldDirection.copy( cameraRelativeDirection );
+
         this.object.position.copy( objectWorldPosition );
         this.object.position.applyMatrix4( objectParentMatrixWorldInverse );
+
+        objectDirection.copy( objectWorldDirection );
+        objectDirection.applyMatrix3( new Matrix3().setFromMatrix4( objectParentMatrixWorldInverse ) )
+
+        if( objectDirection.length() > 0 ){
+            this.object.lookAt( objectDirection.add( this.object.position ) );
+        }
         
     }
 

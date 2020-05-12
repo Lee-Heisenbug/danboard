@@ -1,4 +1,4 @@
-import { Scene, AmbientLight, Texture, Mesh, Color, SphereBufferGeometry } from 'three';
+import { Scene, AmbientLight, Texture, Mesh, Color, SphereBufferGeometry, AxesHelper } from 'three';
 import StandardSSAOMaterial from './StandardSSAOMaterial';
 import SkyDome from './SkyDome';
 
@@ -51,6 +51,8 @@ class SceneModifier {
         } )
 
         this.scene.add( this._createSkyDome() );
+
+        this.scene.add( new AxesHelper( 10 ) );
 
     }
     _createLights() {
