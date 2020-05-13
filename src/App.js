@@ -48,8 +48,8 @@ class App {
         this._autoResize();
         this._handleEvents();
         this.contorls = new OrbitControls( this.camera, dom );
-        this.contorls.maxPolarAngle = Math.PI * 3 / 4
-        this.contorls.minPolarAngle = Math.PI / 4
+        this.contorls.maxPolarAngle = Math.PI * 5 / 6
+        this.contorls.minPolarAngle = Math.PI / 6
         this.contorls.maxDistance = 20
 
     }

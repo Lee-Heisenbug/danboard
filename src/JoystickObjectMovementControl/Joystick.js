@@ -1,4 +1,4 @@
-import JoystickObserver from './JoystickObserver';
+import JoystickObserver from '../Joystick/JoystickObserver';
 
 export default class Joystick {
     constructor() {
