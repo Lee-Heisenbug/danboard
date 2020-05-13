@@ -1,21 +1,17 @@
-import JoystickObserver from '../Joystick/JoystickObserver';
-
+/**
+ * @callback JoystickChangedCallback
+ * @param { number } x
+ * @param { number } y
+ */
 export default class Joystick {
     constructor() {
-        /**@type { JoystickObserver } */
-        this.observer = null
+        /**@type { JoystickChangedCallback } */
+        this.joystickChangedCallback = () => {}
     }
     /**
-     * @param { number } x 
-     * @param { number } y 
+     * @param { JoystickChangedCallback } cb 
      */
-    setValue( x, y ) {
-        this.observer.update( x, y );
-    }
-    /**
-     * @param { JoystickObserver } observer 
-     */
-    setObserver( observer ) {
-        this.observer = observer;
+    onChanged( cb ) {
+        this.joystickChangedCallback = cb
     }
 };

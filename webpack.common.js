@@ -1,6 +1,7 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
   entry: {
@@ -30,6 +31,13 @@ module.exports = {
             ]
           },
           {
+            test: /\.css$/,
+            use: [
+              'style-loader',
+              'css-loader'
+            ],
+          },
+          {
             test: /\.scss$/,
             use: [
               'style-loader',
@@ -40,6 +48,19 @@ module.exports = {
           {
             test: /\.geojson$/,
             use: [ 'json-loader' ]
+          },
+          {
+            test: /\.vue$/,
+            loader: 'vue-loader',
+            options: {
+              loaders: {
+                'scss': [
+                  'vue-style-loader',
+                  'css-loader',
+                  'sass-loader'
+                ]
+              }
+            }
           }
       ]
   },
@@ -48,5 +69,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './index.html'
     }),
+    new VueLoaderPlugin()
   ]
 };

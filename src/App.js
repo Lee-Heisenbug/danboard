@@ -8,6 +8,7 @@ import DOMPointerOffsetEmitter from './DOMPointerOffsetEmitter';
 import MovementAnimationControl from './MovementAnimationControl';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import CameraRelativeObjectMovementControl from './CameraRelativeObjectMovementControl';
+import Joystick from './JoystickObjectMovementControlImp/JoystickVue'
 
 class App {
 
@@ -51,6 +52,8 @@ class App {
         this.contorls.maxPolarAngle = Math.PI * 5 / 6
         this.contorls.minPolarAngle = Math.PI / 6
         this.contorls.maxDistance = 20
+
+        new Joystick();
 
     }
     _handleEvents() {
