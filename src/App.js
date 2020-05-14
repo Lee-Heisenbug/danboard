@@ -4,7 +4,6 @@ import sceneFile from '../export/danboard_low_poly.glb';
 import SceneModifier from './SceneModifier';
 import SSAOGenerator from './SSAOGenerator';
 import DanboardApp from './DanboardApp';
-import DOMPointerOffsetEmitter from './DOMPointerOffsetEmitter';
 import MovementAnimationControl from './MovementAnimationControl';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import CameraRelativeObjectMovementControl from './CameraRelativeObjectMovementControl';
@@ -40,12 +39,12 @@ class App {
         this.SSAOGenerator.setCamera( this.camera );
         this.SSAOGenerator.setRenderer( this.renderer );
         this.velocity = new Vector2();
-        this.domPointerOffsetEmitter = new DOMPointerOffsetEmitter( this.dom );
         this._loadedModel;
         this.animation;
         this.clock = new Clock();
 
         this.camera.lookAt( new Vector3( 0, 3.5, 0 ) );
+        this.joystick = new Joystick();
         this._autoResize();
         this._handleEvents();
         this.contorls = new OrbitControls( this.camera, dom );
@@ -53,34 +52,18 @@ class App {
         this.contorls.minPolarAngle = Math.PI / 6
         this.contorls.maxDistance = 20
 
-        new Joystick();
 
     }
     _handleEvents() {
 
         let self = this;
 
-        this.domPointerOffsetEmitter.addEventListener( offset => {
+        this.joystick.onChanged( ( x, y ) => {
 
-            let velocityFactor = self._getVelocityFactor( offset );
+            self.movementControl.move( x, y )
+            self.movementAnimationControl.setMoveFactor( new Vector2( x, y ).length() );
 
-            console.log( velocityFactor );
-            self.movementControl.move( velocityFactor[ 0 ], velocityFactor[ 1 ] )
-            self.movementAnimationControl.setMoveFactor( new Vector2( velocityFactor[ 0 ], velocityFactor[ 1 ] ).length() );
-
-        } );
-
-    }
-    /**@param { Array< number, number > } offset */
-    _getVelocityFactor( offset ) {
-
-        const RANGE = 200;
-        let v = new Vector2( offset[ 0 ], offset[ 1 ] );
-        v.clampLength( 0, RANGE );
-
-        v.divideScalar( RANGE );
-
-        return [ v.x, -v.y ];
+        } )
 
     }
     _createRenderer() {

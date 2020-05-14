@@ -7,6 +7,11 @@ export default class JoystickImp extends Joystick {
         super();
         let mountDOM = document.createElement( 'div' );
         document.body.appendChild( mountDOM )
-        new Vue( JoyStickUI ).$mount( mountDOM );
+        let vue = new Vue( JoyStickUI ).$mount( mountDOM );
+        vue.$on( 'change', ( coord ) => {
+
+            this.joystickChangedCallback( coord[ 0 ], coord[ 1 ] );
+            
+        } )
     }
 };
