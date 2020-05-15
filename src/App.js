@@ -5,7 +5,7 @@ import SceneModifier from './SceneModifier';
 import SSAOGenerator from './SSAOGenerator';
 import DanboardApp from './DanboardApp';
 import MovementAnimationControl from './MovementAnimationControl';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { OrbitControls } from './OrbitControls'
 import CameraRelativeObjectMovementControl from './CameraRelativeObjectMovementControl';
 import Joystick from './JoystickObjectMovementControlImp/JoystickVue'
 
