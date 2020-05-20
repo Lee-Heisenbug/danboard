@@ -1,4 +1,4 @@
-import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, Clock, AnimationMixer, Vector3, Color } from 'three';
+import { WebGLRenderer, Scene, PerspectiveCamera, Vector2, Clock, AnimationMixer, Vector3, Color, AnimationClip } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import sceneFile from '../export/danboard_low_poly.glb';
 import SceneModifier from './SceneModifier';
@@ -134,9 +134,9 @@ class App {
 
         return this._loadGLTFModel().then( gltf => {
 
-            self.idleClip = gltf.animations[ 2 ];
-            self.walkClip = gltf.animations[ 1 ];
-            self.runClip = gltf.animations[ 0 ];
+            self.idleClip = AnimationClip.findByName( gltf.animations, 'Idle' )
+            self.walkClip = AnimationClip.findByName( gltf.animations, 'Walk' );
+            self.runClip = AnimationClip.findByName( gltf.animations, 'Run' );
 
         } )
 
