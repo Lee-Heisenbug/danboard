@@ -5,10 +5,9 @@ import SceneModifier from './SceneModifier';
 import SSAOGenerator from './SSAOGenerator';
 import DanboardApp from './DanboardApp';
 import MovementAnimationControl from './MovementAnimationControl';
-import { OrbitControls } from './OrbitControls'
 import CameraRelativeObjectMovementControl from './CameraRelativeObjectMovementControl';
 import Joystick from './JoystickObjectMovementControlImp/JoystickVue'
-
+import CameraControl from './CameraControl';
 class App {
 
     /**
@@ -48,13 +47,8 @@ class App {
         this._autoResize();
         this._handleEvents();
 
-
-        this.contorls = new OrbitControls( this.camera, dom );
-        this.contorls.maxPolarAngle = Math.PI * 3 / 6
-        this.contorls.minPolarAngle = Math.PI / 6
-        this.contorls.maxDistance = 20
-        this.contorls.minDistance = 20
-
+        /**@type { CameraControl } */
+        this.cameraControl;
 
     }
     _handleEvents() {
@@ -115,7 +109,7 @@ class App {
         return this._loadGLTFModel().then( gltf => {
 
             self.danboard = gltf.scene.getObjectByName( "Armature" );
-
+            self.cameraControl = new CameraControl( self.danboard, self.camera, self.dom );
             self.movementControl = new CameraRelativeObjectMovementControl( self.camera, self.danboard );
             self.movementControl.setSpeed( 5 );
 
@@ -208,9 +202,7 @@ class App {
             let delta = self.clock.getDelta();
             self.animationMixer.update( delta );
             self.movementControl.updateByTime( delta );
-            self.contorls.target.copy( self.danboard.position );
-            self.contorls.target.add( new Vector3( 0, 4, 0 ) )
-            self.contorls.update();
+            self.cameraControl.update();
             requestAnimationFrame( autoUpdateMixer );
 
         }
