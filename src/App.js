@@ -222,6 +222,12 @@ class App {
         let self = this;
 
         this._resize();
+
+        window.addEventListener( 'orientationchange', () => {
+
+            self._resize();
+
+        } )
         
         window.addEventListener( 'resize', () => {
 
