@@ -16,6 +16,7 @@ class CameraControl {
         this.orbitControls.minPolarAngle = Math.PI / 6
         this.orbitControls.maxDistance = 20
         this.orbitControls.minDistance = 20
+        this.orbitControls.enableDamping = true;
 
     }
     update() {
