@@ -47,10 +47,13 @@ class App {
         this.joystick = new Joystick();
         this._autoResize();
         this._handleEvents();
+
+
         this.contorls = new OrbitControls( this.camera, dom );
-        this.contorls.maxPolarAngle = Math.PI * 5 / 6
+        this.contorls.maxPolarAngle = Math.PI * 3 / 6
         this.contorls.minPolarAngle = Math.PI / 6
         this.contorls.maxDistance = 20
+        this.contorls.minDistance = 20
 
 
     }
@@ -113,7 +116,6 @@ class App {
 
             self.danboard = gltf.scene.getObjectByName( "Armature" );
 
-            self.contorls.target = self.danboard.position;
             self.movementControl = new CameraRelativeObjectMovementControl( self.camera, self.danboard );
             self.movementControl.setSpeed( 5 );
 
@@ -206,6 +208,8 @@ class App {
             let delta = self.clock.getDelta();
             self.animationMixer.update( delta );
             self.movementControl.updateByTime( delta );
+            self.contorls.target.copy( self.danboard.position );
+            self.contorls.target.add( new Vector3( 0, 4, 0 ) )
             self.contorls.update();
             requestAnimationFrame( autoUpdateMixer );
 
