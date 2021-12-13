@@ -16,6 +16,6 @@ jobs:
       - uses: Atyn/simple-sftp-action@0.0.2
         with:
           # URL to the SFTP server. Example: sftp://USERNAME:PASSWORD@example.com/remote-directory
-          url: sftp://root:{{ DEPLOY_PASS }}@{{ DEPLOY_HOST }}/
+          url: sftp://root:${{ secrets.DEPLOY_PASS }}@${{ secrets.DEPLOY_HOST }}/
           # The directory that should be uploaded
           localdir: ./dist
