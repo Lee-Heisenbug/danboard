@@ -7,7 +7,8 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: touch sftp_test.txt
+      - run: mkdir sftp_test
+      - run: touch sftp_test/sftp_test.txt
       - uses: wangyucode/sftp-upload-action@v1.1
         with:
           # 
@@ -15,6 +16,6 @@ jobs:
           # 
           password: ${{ secrets.DEPLOY_PASS}}
           # 
-          localDir: ./sftp_test.txt
+          localDir: ./sftp_test
           # 
-          remoteDir: ~/sftp_test.txt
+          remoteDir: ~/sftp_test
