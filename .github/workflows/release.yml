@@ -7,15 +7,20 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: mkdir sftp_test
-      - run: touch sftp_test/sftp_test.txt
-      - uses: wangyucode/sftp-upload-action@v1.1
+      - name: Checkout
+        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
         with:
-          # 
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Build
+        run: npm install && npm run build
+      - name: Deploy
+        uses: wangyucode/sftp-upload-action@v1.1
+        with:
           host: ${{ secrets.DEPLOY_HOST }}
-          # 
           password: ${{ secrets.DEPLOY_PASS}}
-          # 
-          localDir: ./sftp_test
-          # 
-          remoteDir: /root/sftp_test
+          localDir: ./dist
+          remoteDir: /www/wwwroot/defaultWeb/danboard
