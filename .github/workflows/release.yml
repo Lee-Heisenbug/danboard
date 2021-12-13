@@ -7,9 +7,14 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - run: touch sftp_test.txt
+      - uses: wangyucode/sftp-upload-action@v1.1
         with:
-          node-version: '14'
-      - run: sftp ${{ secrets.DEPLOY_HOST }}
-      - run: ${{ secrets.DEPLOY_PASS }}
+          # 
+          host: ${{ secrets.DEPLOY_HOST }}
+          # 
+          password: ${{ secrets.DEPLOY_PASS}}
+          # 
+          localDir: ./sftp_test.txt
+          # 
+          remoteDir: ~/sftp_test.txt
