@@ -4,12 +4,18 @@ on:
   push:
     branches: [ release ]
 jobs:
-  check-bats-version:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: npm install -g bats
-      - run: bats -v
+      - run: npm install
+      - run: npm run build
+      - uses: Atyn/simple-sftp-action@0.0.2
+        with:
+          # URL to the SFTP server. Example: sftp://USERNAME:PASSWORD@example.com/remote-directory
+          url: sftp://root:{{ DEPLOY_PASS }}@{{ DEPLOY_HOST }}/
+          # The directory that should be uploaded
+          localdir: ./dist
